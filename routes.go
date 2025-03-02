@@ -3,7 +3,7 @@ package httpserver
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/yeencloud/httpserver/domain"
+	"github.com/yeencloud/lib-httpserver/domain"
 )
 
 func pageNotFoundError(method string, path string) error {

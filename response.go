@@ -8,7 +8,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
 
-	"github.com/yeencloud/httpserver/domain"
+	"github.com/yeencloud/lib-httpserver/domain"
 )
 
 type Response struct {

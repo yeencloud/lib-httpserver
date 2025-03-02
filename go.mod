@@ -1,4 +1,4 @@
-module github.com/yeencloud/httpserver
+module github.com/yeencloud/lib-httpserver
 
 go 1.23
 
@@ -7,8 +7,8 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/gin-contrib/cors v1.7.3
 	github.com/gin-gonic/gin v1.10.0
-	github.com/yeencloud/logger v0.1.0
-	github.com/yeencloud/shared v0.0.5
+	github.com/yeencloud/lib-logger v0.1.1
+	github.com/yeencloud/lib-shared v0.1.0
 )
 
 require (
@@ -32,7 +32,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/ugorji/go/codec v1.2.12 // indirect
+	github.com/ugorji/go/codec v1.2.12 // indirect; indirectw
 	golang.org/x/arch v0.12.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/net v0.33.0 // indirect

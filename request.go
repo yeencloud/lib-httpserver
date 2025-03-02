@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/yeencloud/logger/domain"
+	"github.com/yeencloud/lib-logger/domain"
 )
 
 func (gs *HttpServer) GetPath(ctx *gin.Context) string {
@@ -16,7 +16,7 @@ func (gs *HttpServer) GetPath(ctx *gin.Context) string {
 
 	return path
 }
- 
+
 func (gs *HttpServer) ProfileNextRequest(ctx *gin.Context) time.Duration {
 	start := time.Now()
 	ctx.Next()

@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/yeencloud/shared/log"
+	"github.com/yeencloud/lib-shared/log"
 )
 
 var (

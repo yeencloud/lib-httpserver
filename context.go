@@ -3,7 +3,7 @@ package httpserver
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/yeencloud/shared"
+	"github.com/yeencloud/lib-shared"
 )
 
 func SetRequestContextValue(ctx *gin.Context, key, value interface{}) {

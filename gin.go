@@ -7,12 +7,12 @@ import (
 	nice "github.com/ekyoung/gin-nice-recovery"
 	"github.com/gin-gonic/gin"
 
-	"github.com/yeencloud/shared/log"
+	"github.com/yeencloud/lib-shared/log"
 
-	Logger "github.com/yeencloud/logger"
-	LogDomain "github.com/yeencloud/logger/domain"
+	"github.com/yeencloud/lib-logger"
+	"github.com/yeencloud/lib-logger/domain"
 
-	"github.com/yeencloud/httpserver/domain"
+	"github.com/yeencloud/lib-httpserver/domain"
 )
 
 type HttpServer struct {
