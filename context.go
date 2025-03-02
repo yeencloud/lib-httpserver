@@ -9,8 +9,10 @@ import (
 func SetRequestContextValue(ctx *gin.Context, key, value interface{}) {
 	// Get the existing context from the request
 	reqCtx, _ := ctx.Get("shared")
-	cc := reqCtx.(*shared.Context)
-	cc.WithValue(key, value)
+	cc, ok := reqCtx.(*shared.Context)
+	if ok {
+		cc.WithValue(key, value)
+	}
 }
 
 func CreateSharedRequest(ctx *gin.Context) {

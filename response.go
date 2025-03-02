@@ -20,6 +20,16 @@ type Response struct {
 	RequestID string `json:"requestId,omitempty"`
 }
 
+func isRawResponse(ctx *gin.Context) bool {
+	value, ok := ctx.Get("raw_response")
+	if ok {
+		isRaw, ok := value.(bool)
+		return ok && isRaw
+	}
+
+	return false
+}
+
 func reply(ctx *gin.Context, replyCall func(code int, obj any), code int, body interface{}, err error) {
 	if ctx.Writer.Written() {
 		return
@@ -27,33 +37,40 @@ func reply(ctx *gin.Context, replyCall func(code int, obj any), code int, body i
 
 	var response any
 
-	if raw, _ := ctx.Get("raw_response"); raw != nil && raw.(bool) == true {
+	if isRawResponse(ctx) {
 		if err != nil {
 			body = err.Error()
 		}
 
 		response = body
-	} else {
-		response = Response{
-			StatusCode: code,
-			Body:       body,
+		replyCall(code, response)
+	}
+
+	response = Response{
+		StatusCode: code,
+		Body:       body,
+	}
+
+	if structs.IsZero(body) {
+		resp, ok := response.(*Response)
+		if ok {
+			resp.Body = nil
 		}
+	}
 
-		if structs.IsZero(body) {
-			response.(*Response).Body = nil
-		}
+	if err != nil {
+		errorStr := err.Error()
+		errs := strings.Split(errorStr, "\n")
 
-		if err != nil {
-			errorStr := err.Error()
-			errs := strings.Split(errorStr, "\n")
-
-			if os.Getenv("ENV") == "production" || os.Getenv("ENV") == "prod" {
-				if len(errs) > 1 {
-					errorStr = errs[0]
-				}
+		if os.Getenv("ENV") == "production" || os.Getenv("ENV") == "prod" {
+			if len(errs) > 1 {
+				errorStr = errs[0]
 			}
+		}
 
-			response.(*Response).Error = &domain.ResponseError{
+		resp, ok := response.(*Response)
+		if ok {
+			resp.Error = &domain.ResponseError{
 				Message: errorStr,
 			}
 		}

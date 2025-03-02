@@ -30,7 +30,7 @@ func (ck ContextKey) String() string {
 }
 
 func debugPrintRoutes(httpMethod, absolutePath, handlerName string, nuHandlers int) {
-	Logger.Log(LogDomain.LogLevelInfo).WithFields(log.Fields{
+	Logger.Log(LoggerDomain.LogLevelInfo).WithFields(log.Fields{
 		domain.LogHttpMethodField:       httpMethod,
 		domain.LogHttpPathField:         absolutePath,
 		domain.LogHttpHandlerCountField: nuHandlers,
