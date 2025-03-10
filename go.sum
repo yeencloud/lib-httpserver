@@ -79,8 +79,8 @@ github.com/ugorji/go/codec v1.2.12 h1:9LC83zGrHhuUA9l16C9AHXAqEV/2wBQ4nkvumAE65E
 github.com/ugorji/go/codec v1.2.12/go.mod h1:UNopzCgEMSXjBc6AOMqYvWC1ktqTAfzJZUZgYf6w6lg=
 github.com/yeencloud/lib-logger v0.1.1 h1:0VBjqgW5m1pmZm5voiLTTGDu2zgPIz7yxs9rrOE1URA=
 github.com/yeencloud/lib-logger v0.1.1/go.mod h1:+wKUQbKHRnxutRUNivG+XWbT0Bt2RNizgIwu7gMCa3U=
-github.com/yeencloud/lib-shared v0.1.0 h1:2i69Y4dOoRhKLDLUZ+IRTsy7utqrtwUbaLtXwDFJtns=
-github.com/yeencloud/lib-shared v0.1.0/go.mod h1:UFGbti2J/h179bvodfK/YpIiV94hiA4vlni1Cgc575k=
+github.com/yeencloud/lib-shared v0.1.1 h1:C5D4691AsDojXJ0ZA/XU681Q9tshk8SH8qSyDdC5LFk=
+github.com/yeencloud/lib-shared v0.1.1/go.mod h1:UFGbti2J/h179bvodfK/YpIiV94hiA4vlni1Cgc575k=
 golang.org/x/arch v0.12.0 h1:UsYJhbzPYGsT0HbEdmYcqtCv8UNGvnaL561NnIUvaKg=
 golang.org/x/arch v0.12.0/go.mod h1:FEVrYAQjsQXMVJ1nsMoVVXPZg6p2JE2mx8psSWTDQys=
 golang.org/x/crypto v0.31.0 h1:ihbySMvVjLAeSH1IbfcRTkD/iNscyz8rGzjF/E5hV6U=
