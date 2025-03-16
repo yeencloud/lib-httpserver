@@ -1,16 +1,17 @@
 package domain
 
 import (
-	"github.com/yeencloud/lib-shared/log"
+	"github.com/yeencloud/lib-shared/namespace"
 )
 
-var HttpContextKey = log.Path{Identifier: "http"}
-var HttpRequestContextKey = log.Path{Parent: &HttpContextKey, Identifier: "request"}
-var HttpResponseContextKey = log.Path{Parent: &HttpContextKey, Identifier: "response"}
+var HttpContextKey = namespace.Namespace{Identifier: "http"}
+var HttpRequestContextKey = namespace.Namespace{Parent: &HttpContextKey, Identifier: "request"}
+var HttpResponseContextKey = namespace.Namespace{Parent: &HttpContextKey, Identifier: "response"}
 
 var (
-	HttpPathKey          = log.Path{Parent: &HttpRequestContextKey, Identifier: "path"}
-	HttpFullPathKey      = log.Path{Parent: &HttpRequestContextKey, Identifier: "full_path"}
-	HttpMethodKey        = log.Path{Parent: &HttpRequestContextKey, Identifier: "method"}
-	HttpCorrelationIdKey = log.Path{Parent: &HttpRequestContextKey, Identifier: "correlation_id", IsMetricTag: true}
+	HttpPathKey          = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "path"}
+	HttpFullPathKey      = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "fullPath"}
+	HttpMethodKey        = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "method"}
+	HttpCorrelationIdKey = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "correlationId", IsMetricTag: true}
+	HttpRequestIdKey     = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "requestId", IsMetricTag: true}
 )

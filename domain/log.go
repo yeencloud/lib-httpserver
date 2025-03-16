@@ -1,22 +1,22 @@
 package domain
 
 import (
-	"github.com/yeencloud/lib-shared/log"
+	"github.com/yeencloud/lib-shared/namespace"
 )
 
 var (
-	LogHTTPScope = log.Path{Identifier: "http"}
+	LogHTTPScope = namespace.Namespace{Identifier: "http"}
 
-	LogRouteScope    = log.Path{Parent: &LogHTTPScope, Identifier: "route"}
-	LogResponseScope = log.Path{Parent: &LogHTTPScope, Identifier: "response"}
+	LogRouteScope    = namespace.Namespace{Parent: &LogHTTPScope, Identifier: "route"}
+	LogResponseScope = namespace.Namespace{Parent: &LogHTTPScope, Identifier: "response"}
 )
 
 var (
-	LogHttpMethodField       = log.Path{Parent: &LogRouteScope, Identifier: "method"}
-	LogHttpPathField         = log.Path{Parent: &LogRouteScope, Identifier: "path"}
-	LogHttpHandlerCountField = log.Path{Parent: &LogRouteScope, Identifier: "handler_count"}
-	LogHttpHandlerNameField  = log.Path{Parent: &LogRouteScope, Identifier: "handler"}
+	LogHttpMethodField       = namespace.Namespace{Parent: &LogRouteScope, Identifier: "method"}
+	LogHttpPathField         = namespace.Namespace{Parent: &LogRouteScope, Identifier: "path"}
+	LogHttpHandlerCountField = namespace.Namespace{Parent: &LogRouteScope, Identifier: "handler_count"}
+	LogHttpHandlerNameField  = namespace.Namespace{Parent: &LogRouteScope, Identifier: "handler"}
 
-	LogHttpResponseStatusCodeField = log.Path{Parent: &LogResponseScope, Identifier: "status"}
-	LogHttpResponseTimeField       = log.Path{Parent: &LogResponseScope, Identifier: "ms"}
+	LogHttpResponseStatusCodeField = namespace.Namespace{Parent: &LogResponseScope, Identifier: "status"}
+	LogHttpResponseTimeField       = namespace.Namespace{Parent: &LogResponseScope, Identifier: "ms"}
 )

@@ -4,8 +4,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/yeencloud/lib-logger/domain"
+	"github.com/sirupsen/logrus"
 )
 
 func (gs *HttpServer) GetPath(ctx *gin.Context) string {
@@ -24,13 +23,13 @@ func (gs *HttpServer) ProfileNextRequest(ctx *gin.Context) time.Duration {
 	return end.Sub(start)
 }
 
-func (gs *HttpServer) MapHttpStatusToLoggingLevel(ctx *gin.Context) LoggerDomain.Level {
+func (gs *HttpServer) MapHttpStatusToLoggingLevel(ctx *gin.Context) logrus.Level {
 	status := ctx.Writer.Status()
-	level := LoggerDomain.LogLevelInfo
+	level := logrus.InfoLevel
 	if status >= 400 && status < 500 {
-		level = LoggerDomain.LogLevelWarn
+		level = logrus.WarnLevel
 	} else if status >= 500 {
-		level = LoggerDomain.LogLevelError
+		level = logrus.ErrorLevel
 	}
 	return level
 }

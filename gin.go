@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"strings"
 
-	nice "github.com/ekyoung/gin-nice-recovery"
 	"github.com/gin-gonic/gin"
-
-	"github.com/yeencloud/lib-shared/log"
-
-	"github.com/yeencloud/lib-logger"
-	"github.com/yeencloud/lib-logger/domain"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/yeencloud/lib-httpserver/domain"
+	metrics "github.com/yeencloud/lib-metrics"
+	MetricsDomain "github.com/yeencloud/lib-metrics/domain"
+	sharedMetrics "github.com/yeencloud/lib-shared/metrics"
 )
 
 type HttpServer struct {
@@ -30,12 +28,12 @@ func (ck ContextKey) String() string {
 }
 
 func debugPrintRoutes(httpMethod, absolutePath, handlerName string, nuHandlers int) {
-	Logger.Log(LoggerDomain.LogLevelInfo).WithFields(log.Fields{
+	/*Logger.Log(LoggerDomain.LogLevelInfo).WithFields(log.Fields{
 		domain.LogHttpMethodField:       httpMethod,
 		domain.LogHttpPathField:         absolutePath,
 		domain.LogHttpHandlerCountField: nuHandlers,
 		domain.LogHttpHandlerNameField:  handlerName,
-	}).Msg(fmt.Sprintf("%s %s", httpMethod, absolutePath))
+	}).Msg(fmt.Sprintf("%s %s", httpMethod, absolutePath))*/
 }
 
 func NewHttpServer(config *domain.HttpServerConfig) *HttpServer {
@@ -43,9 +41,6 @@ func NewHttpServer(config *domain.HttpServerConfig) *HttpServer {
 	gin.DebugPrintFunc = func(format string, values ...interface{}) {}
 
 	r := gin.New()
-	r.Use(func(c *gin.Context) {
-		c.Set("raw_response", true)
-	})
 
 	err := r.SetTrustedProxies(nil)
 	if err != nil {
@@ -59,15 +54,43 @@ func NewHttpServer(config *domain.HttpServerConfig) *HttpServer {
 		config: config,
 	}
 
+	gs.handleMiddleware()
 	gs.handleErrorRoutes()
-	r.Use(nice.Recovery(gs.recoverFromPanic))
-	r.Use(CreateSharedRequest)
-	r.Use(gs.handleRequestID)
-	r.Use(gs.handleCorrelationID)
+	r.Use(gs.LogRequest)
 
 	return gs
 }
 
 func (gs *HttpServer) Run() error {
 	return gs.Gin.Run(fmt.Sprintf("%s:%d", gs.config.Host, gs.config.Port))
+}
+
+func (gs *HttpServer) LogRequest(c *gin.Context) {
+	path := gs.GetPath(c)
+	latency := gs.ProfileNextRequest(c)
+
+	GetLoggerFromContext(c).WithFields(log.Fields{
+		"status":  c.Writer.Status(),
+		"method":  c.Request.Method,
+		"path":    path,
+		"latency": latency.Milliseconds(),
+	}).Info(fmt.Sprintf("%s %s %d", c.Request.Method, c.Request.URL.Path, c.Writer.Status()))
+
+	point, ok := c.MustGet(sharedMetrics.MetricsPointKey).(MetricsDomain.Point)
+	if !ok {
+		point = MetricsDomain.Point{
+			Tags: map[string]string{},
+		}
+	}
+	point.Name = "http"
+	err := metrics.LogPoint(point, MetricsDomain.Values{
+		"response_status": c.Writer.Status(),
+		"route_method":    c.Request.Method,
+		"route_path":      path,
+		"response_ms":     latency.Milliseconds(),
+	})
+
+	if err != nil {
+		return
+	}
 }

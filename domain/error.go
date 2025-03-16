@@ -13,6 +13,7 @@ type InternalErrorCode interface {
 }
 
 type InternalServerError struct {
+	AdditionalData interface{}
 }
 
 func (e *InternalServerError) Error() string {
