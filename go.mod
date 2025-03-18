@@ -7,7 +7,7 @@ require (
 	github.com/gin-contrib/cors v1.7.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/yeencloud/lib-metrics v0.2.1
+	github.com/yeencloud/lib-metrics v0.2.2
 	github.com/yeencloud/lib-shared v0.2.1
 )
 
