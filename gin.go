@@ -28,12 +28,14 @@ func (ck ContextKey) String() string {
 }
 
 func debugPrintRoutes(httpMethod, absolutePath, handlerName string, nuHandlers int) {
-	/*Logger.Log(LoggerDomain.LogLevelInfo).WithFields(log.Fields{
-		domain.LogHttpMethodField:       httpMethod,
-		domain.LogHttpPathField:         absolutePath,
-		domain.LogHttpHandlerCountField: nuHandlers,
-		domain.LogHttpHandlerNameField:  handlerName,
-	}).Msg(fmt.Sprintf("%s %s", httpMethod, absolutePath))*/
+	entry := log.NewEntry(log.StandardLogger())
+
+	entry = domain.LogHttpMethodField.WithValue(httpMethod).AsField(entry)
+	entry = domain.LogHttpPathField.WithValue(absolutePath).AsField(entry)
+	entry = domain.LogHttpHandlerCountField.WithValue(nuHandlers).AsField(entry)
+	entry = domain.LogHttpHandlerNameField.WithValue(handlerName).AsField(entry)
+
+	entry.Info(fmt.Sprintf("%s %s", httpMethod, absolutePath))
 }
 
 func NewHttpServer(config *domain.HttpServerConfig) *HttpServer {
@@ -74,7 +76,7 @@ func (gs *HttpServer) LogRequest(c *gin.Context) {
 		"method":  c.Request.Method,
 		"path":    path,
 		"latency": latency.Milliseconds(),
-	}).Info(fmt.Sprintf("%s %s %d", c.Request.Method, c.Request.URL.Path, c.Writer.Status()))
+	}).Log(gs.MapHttpStatusToLoggingLevel(c), fmt.Sprintf("%s %s %d", c.Request.Method, c.Request.URL.Path, c.Writer.Status()))
 
 	point, ok := c.MustGet(sharedMetrics.MetricsPointKey).(MetricsDomain.Point)
 	if !ok {

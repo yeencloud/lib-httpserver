@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"errors"
+	"net/http"
 	"os"
 	"strings"
 
@@ -60,7 +61,11 @@ func (hs *HttpServer) renderFunc(ctx *gin.Context) renderFunc {
 }
 
 func (hs *HttpServer) Reply(ctx *gin.Context, body interface{}) {
-	reply(ctx, hs.renderFunc(ctx), 200, body, nil)
+	code := http.StatusOK
+	if ctx.Request.Method == http.MethodPost {
+		code = http.StatusCreated
+	}
+	reply(ctx, hs.renderFunc(ctx), code, body, nil)
 }
 
 func (hs *HttpServer) ReplyWithError(ctx *gin.Context, err error) {
