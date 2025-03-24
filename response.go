@@ -3,49 +3,50 @@ package httpserver
 import (
 	"errors"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/yeencloud/lib-httpserver/domain"
+	"github.com/yeencloud/lib-httpserver/domain/error"
+	sharedErrors "github.com/yeencloud/lib-shared/errors"
 )
 
-type Response struct {
-	StatusCode int `json:"status"`
-
-	Body  interface{}           `json:"body,omitempty"`
-	Error *domain.ResponseError `json:"error,omitempty"`
-
-	RequestId string `json:"requestId,omitempty"`
-	ContextId string `json:"contextId,omitempty"`
-}
-
-func reply(ctx *gin.Context, replyCall func(code int, obj any), code int, body interface{}, err error) {
+func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any), code int, body interface{}, err error) {
 	if ctx.Writer.Written() {
 		return
 	}
 
-	response := Response{
-		StatusCode: code,
-		Body:       body,
-		ContextId:  ctx.GetString("context_id"),
-		RequestId:  ctx.GetString("request_id"),
+	response := domain.Response{
+		StatusCode:    code,
+		CorrelationId: GetCorrelationID(ctx),
+		RequestId:     GetRequestID(ctx),
 	}
 
 	if err != nil {
 		errorStr := err.Error()
 		errs := strings.Split(errorStr, "\n")
 
-		if os.Getenv("ENV") == "production" || os.Getenv("ENV") == "prod" { // TODO check env differently
-			if len(errs) > 1 {
-				errorStr = errs[0]
-			}
+		if hs.Env.IsProduction() && len(errs) > 1 {
+			errorStr = errs[0]
 		}
 
 		response.Error = &domain.ResponseError{
 			Message: errorStr,
 		}
+
+		var IdentifierError sharedErrors.IdentifiableError
+		var FixError sharedErrors.FixableError
+
+		if errors.As(err, &IdentifierError) {
+			response.Error.Code = IdentifierError.Identifier()
+		}
+
+		if errors.As(err, &FixError) {
+			response.Error.HowToFix = FixError.HowToFix()
+		}
+	} else {
+		response.Body = body
 	}
 
 	replyCall(code, response)
@@ -65,15 +66,16 @@ func (hs *HttpServer) Reply(ctx *gin.Context, body interface{}) {
 	if ctx.Request.Method == http.MethodPost {
 		code = http.StatusCreated
 	}
-	reply(ctx, hs.renderFunc(ctx), code, body, nil)
+	hs.reply(ctx, hs.renderFunc(ctx), code, body, nil)
 }
 
 func (hs *HttpServer) ReplyWithError(ctx *gin.Context, err error) {
-	code := 500
-	var restError domain.RestErrorCode
+	code := http.StatusInternalServerError
+
+	var restError HttpError.RestErrorCode
 	if err != nil && errors.As(err, &restError) {
 		code = restError.RestCode()
 	}
 
-	reply(ctx, hs.renderFunc(ctx), code, nil, err)
+	hs.reply(ctx, hs.renderFunc(ctx), code, nil, err)
 }

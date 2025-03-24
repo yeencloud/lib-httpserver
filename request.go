@@ -25,11 +25,13 @@ func (gs *HttpServer) ProfileNextRequest(ctx *gin.Context) time.Duration {
 
 func (gs *HttpServer) MapHttpStatusToLoggingLevel(ctx *gin.Context) logrus.Level {
 	status := ctx.Writer.Status()
+
 	level := logrus.InfoLevel
 	if status >= 400 && status < 500 {
 		level = logrus.WarnLevel
 	} else if status >= 500 {
 		level = logrus.ErrorLevel
 	}
+
 	return level
 }

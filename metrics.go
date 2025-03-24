@@ -13,3 +13,14 @@ func (hs *HttpServer) CreateMetricsForRequest(ctx *gin.Context) {
 	})
 	ctx.Set(metrics.MetricsValuesKey, MetricsDomain.Values{})
 }
+
+func GetMetricsFromContext(ctx *gin.Context) MetricsDomain.Point {
+	metricsPoint, ok := ctx.MustGet(metrics.MetricsPointKey).(MetricsDomain.Point)
+	if !ok {
+		metricsPoint = MetricsDomain.Point{
+			Tags: MetricsDomain.Tags{},
+		}
+	}
+
+	return metricsPoint
+}

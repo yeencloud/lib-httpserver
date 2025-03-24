@@ -1,38 +1,24 @@
-package domain
+package HttpError
 
 import (
 	"fmt"
 )
 
-type RestErrorCode interface {
-	RestCode() int
-}
-
-type InternalErrorCode interface {
-	InternalErrorCode() string
-}
-
+// MARK: Internal Server Error
 type InternalServerError struct {
 	AdditionalData interface{}
 }
 
 func (e *InternalServerError) Error() string {
-	return "http: internal server error"
+	return "internal server error"
 }
 
 func (e *InternalServerError) RestCode() int {
 	return 500
 }
 
-type ResponseError struct {
-	Code        string `json:"code,omitempty"`
-	Message     string `json:"message"`
-	Translation string `json:"translation,omitempty"`
-}
-
+// MARK: Page Not Found Error
 type PageNotFoundError struct {
-	Msg string
-
 	Method string
 	Path   string
 }
@@ -40,21 +26,22 @@ type PageNotFoundError struct {
 func (e *PageNotFoundError) Error() string {
 	arg := ""
 	if e.Path != "" {
-		arg = fmt.Sprintf("(%v %v)", e.Method, e.Path)
+		arg = fmt.Sprintf("%v %v: ", e.Method, e.Path)
 	}
-	return fmt.Sprintf("http: page not found: %v %v", e.Msg, arg)
+	return arg + " page not found"
 }
 
 func (e *PageNotFoundError) RestCode() int {
 	return 404
 }
 
+// MARK: Bad Request Error
 type BadRequestError struct {
 	Msg string
 }
 
 func (e *BadRequestError) Error() string {
-	return "http: bad request: " + e.Msg
+	return "bad request: " + e.Msg
 }
 
 func (e *BadRequestError) RestCode() int {

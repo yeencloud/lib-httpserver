@@ -1,4 +1,4 @@
-package domain
+package HttpConfig
 
 type HttpServerConfig struct {
 	// Bind Address

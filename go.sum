@@ -93,10 +93,10 @@ github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/ugorji/go/codec v1.2.12 h1:9LC83zGrHhuUA9l16C9AHXAqEV/2wBQ4nkvumAE65EE=
 github.com/ugorji/go/codec v1.2.12/go.mod h1:UNopzCgEMSXjBc6AOMqYvWC1ktqTAfzJZUZgYf6w6lg=
-github.com/yeencloud/lib-metrics v0.2.1 h1:NmZh0+fK9OI9Fwcyzu35GGqC/mbwTz+dzXufixQo1CA=
-github.com/yeencloud/lib-metrics v0.2.1/go.mod h1:MDuL+1f1rAnVFn+2cmmKKoBh4bgQRTiI3eT0ZWfSXMI=
-github.com/yeencloud/lib-shared v0.2.1 h1:5kXqbrf4AeV4hPQ2u7RHZ1U0P5FAgaoXwLatR831baY=
-github.com/yeencloud/lib-shared v0.2.1/go.mod h1:XpBV6JhBAUzbbiAXY6PJoQbuYA8fiwDw9ojPry12b0g=
+github.com/yeencloud/lib-metrics v0.2.3 h1:Z1uMWFKZNxYKfr/f6Qo0Ma4tHAtdWFTDF7bbf88VdGc=
+github.com/yeencloud/lib-metrics v0.2.3/go.mod h1:kuq00FqwNt7TY/DAGR2Bnkx7yKNdm7biIizc8AZNoeI=
+github.com/yeencloud/lib-shared v0.2.2 h1:6/rGhJKi+C+Rbr41WtYZArdAuN2llYOBqrqS5wcLBaM=
+github.com/yeencloud/lib-shared v0.2.2/go.mod h1:XpBV6JhBAUzbbiAXY6PJoQbuYA8fiwDw9ojPry12b0g=
 golang.org/x/arch v0.12.0 h1:UsYJhbzPYGsT0HbEdmYcqtCv8UNGvnaL561NnIUvaKg=
 golang.org/x/arch v0.12.0/go.mod h1:FEVrYAQjsQXMVJ1nsMoVVXPZg6p2JE2mx8psSWTDQys=
 golang.org/x/crypto v0.31.0 h1:ihbySMvVjLAeSH1IbfcRTkD/iNscyz8rGzjF/E5hV6U=

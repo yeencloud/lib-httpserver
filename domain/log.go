@@ -20,3 +20,5 @@ var (
 	LogHttpResponseStatusCodeField = namespace.Namespace{Parent: &LogResponseScope, Identifier: "status"}
 	LogHttpResponseTimeField       = namespace.Namespace{Parent: &LogResponseScope, Identifier: "ms"}
 )
+
+const HttpMetricPointName = "http"
