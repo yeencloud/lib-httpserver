@@ -9,6 +9,7 @@ import (
 
 	"github.com/yeencloud/lib-httpserver/domain"
 	"github.com/yeencloud/lib-httpserver/domain/error"
+	"github.com/yeencloud/lib-shared/metrics"
 )
 
 func debugPrintRoutes(httpMethod, absolutePath, handlerName string, nuHandlers int) {
@@ -45,5 +46,5 @@ func (gs *HttpServer) handleMiddleware() {
 	r.Use(gs.CreateLoggerForRequest)
 	r.Use(gs.CreateMetricsForRequest)
 	r.Use(gs.handleHeader(domain.HeaderXRequestId, domain.HttpRequestIdKey))
-	r.Use(gs.handleHeader(domain.HeaderXCorrelationId, domain.HttpCorrelationIdKey))
+	r.Use(gs.handleHeader(domain.HeaderXCorrelationId, metrics.CorrelationIdKey))
 }

@@ -5,10 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	metrics "github.com/yeencloud/lib-metrics"
 
 	"github.com/yeencloud/lib-httpserver/domain"
-	metrics "github.com/yeencloud/lib-metrics"
-	MetricsDomain "github.com/yeencloud/lib-metrics/domain"
 	shared "github.com/yeencloud/lib-shared/log"
 )
 
@@ -19,6 +18,13 @@ func (hs *HttpServer) CreateLoggerForRequest(ctx *gin.Context) {
 	logEntry = domain.HttpMethodKey.WithValue(ctx.Request.Method).AsField(logEntry)
 
 	setLogger(ctx, logEntry)
+}
+
+type HttpRequestMetric struct {
+	Method   string `metric:"method"`
+	Path     string `metric:"path"`
+	Status   int    `metric:"status"`
+	Duration int64  `metric:"duration"`
 }
 
 // TODO: should find a way to log a point with the same key/values as the log entry without having to repeat the key/values setting (maybe an abstraction that can be used by both logrus and influxdb)
@@ -33,13 +39,10 @@ func (gs *HttpServer) LogRequest(c *gin.Context) {
 		domain.LogHttpResponseTimeField.String():       latency.Milliseconds(),
 	}).Log(gs.MapHttpStatusToLoggingLevel(c), fmt.Sprintf("%s %s %d", c.Request.Method, c.Request.URL.Path, c.Writer.Status()))
 
-	point := GetMetricsFromContext(c)
-
-	point.Name = domain.HttpMetricPointName
-	metrics.LogPoint(point, MetricsDomain.Values{
-		domain.LogHttpResponseStatusCodeField.MetricKey(): c.Writer.Status(),
-		domain.LogHttpMethodField.MetricKey():             c.Request.Method,
-		domain.LogHttpPathField.MetricKey():               path,
-		domain.LogHttpResponseTimeField.MetricKey():       latency.Milliseconds(),
+	_ = metrics.WritePoint(c, domain.HttpMetricPointName, HttpRequestMetric{
+		Method:   c.Request.Method,
+		Path:     path,
+		Status:   c.Writer.Status(),
+		Duration: latency.Milliseconds(),
 	})
 }
