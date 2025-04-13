@@ -10,7 +10,6 @@ import (
 
 func (hs *HttpServer) CreateMetricsForRequest(ctx *gin.Context) {
 	ctx.Set(SharedMetrics.MetricsPointKey, metrics.NewPoint())
-
 }
 
 func GetMetricsFromContext(ctx *gin.Context) MetricsDomain.Point {
