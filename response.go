@@ -1,26 +1,40 @@
 package httpserver
 
 import (
+	"encoding/json"
 	"errors"
+	"github.com/samber/lo"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/yeencloud/lib-httpserver/contract/httpserver"
 
-	"github.com/yeencloud/lib-httpserver/domain"
 	"github.com/yeencloud/lib-httpserver/domain/error"
 	sharedErrors "github.com/yeencloud/lib-shared/errors"
 )
 
-func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any), code int, body interface{}, err error) {
+func structToMap(v any) (map[string]interface{}, error) {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	var m map[string]interface{}
+	if err := json.Unmarshal(b, &m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any), code int, body any, err error) {
 	if ctx.Writer.Written() {
 		return
 	}
 
-	response := domain.Response{
-		StatusCode:    code,
-		CorrelationId: GetCorrelationID(ctx),
-		RequestId:     GetRequestID(ctx),
+	response := httpserver.Response{
+		Status:        code,
+		CorrelationId: lo.ToPtr(GetCorrelationID(ctx)),
+		RequestId:     lo.ToPtr(GetRequestID(ctx)),
 	}
 
 	if err != nil {
@@ -31,7 +45,7 @@ func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any),
 			errorStr = errs[0]
 		}
 
-		response.Error = &domain.ResponseError{
+		response.Error = &httpserver.ResponseError{
 			Message: errorStr,
 		}
 
@@ -39,14 +53,20 @@ func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any),
 		var FixError sharedErrors.FixableError
 
 		if errors.As(err, &IdentifierError) {
-			response.Error.Code = IdentifierError.Identifier()
+			response.Error.Code = lo.ToPtr(IdentifierError.Identifier())
 		}
 
 		if errors.As(err, &FixError) {
-			response.Error.HowToFix = FixError.HowToFix()
+			response.Error.HowToFix = lo.ToPtr(FixError.HowToFix())
 		}
 	} else {
-		response.Body = body
+		structmap, err := structToMap(body)
+		if err != nil {
+			hs.reply(ctx, replyCall, http.StatusInternalServerError, nil, err)
+			return
+		} else {
+			response.Body = lo.ToPtr(structmap)
+		}
 	}
 
 	replyCall(code, response)
