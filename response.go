@@ -38,27 +38,7 @@ func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any),
 	}
 
 	if err != nil {
-		errorStr := err.Error()
-		errs := strings.Split(errorStr, "\n")
-
-		if hs.Env.IsProduction() && len(errs) > 1 {
-			errorStr = errs[0]
-		}
-
-		response.Error = &httpserver.ResponseError{
-			Message: errorStr,
-		}
-
-		var IdentifierError sharedErrors.IdentifiableError
-		var FixError sharedErrors.FixableError
-
-		if errors.As(err, &IdentifierError) {
-			response.Error.Code = lo.ToPtr(IdentifierError.Identifier())
-		}
-
-		if errors.As(err, &FixError) {
-			response.Error.HowToFix = lo.ToPtr(FixError.HowToFix())
-		}
+		hs.fillResponseWithErrorDetails(err, response)
 	} else {
 		structmap, err := structToMap(body)
 		if err != nil {
@@ -70,6 +50,30 @@ func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any),
 	}
 
 	replyCall(code, response)
+}
+
+func (hs *HttpServer) fillResponseWithErrorDetails(err error, response httpserver.Response) {
+	errorStr := err.Error()
+	errs := strings.Split(errorStr, "\n")
+
+	if hs.Env.IsProduction() && len(errs) > 1 {
+		errorStr = errs[0]
+	}
+
+	response.Error = &httpserver.ResponseError{
+		Message: errorStr,
+	}
+
+	var IdentifierError sharedErrors.IdentifiableError
+	var FixError sharedErrors.FixableError
+
+	if errors.As(err, &IdentifierError) {
+		response.Error.Code = lo.ToPtr(IdentifierError.Identifier())
+	}
+
+	if errors.As(err, &FixError) {
+		response.Error.HowToFix = lo.ToPtr(FixError.HowToFix())
+	}
 }
 
 type renderFunc func(code int, obj any)
