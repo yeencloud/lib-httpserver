@@ -9,8 +9,8 @@ import (
 )
 
 func GetLoggerFromGinContext(ctx *gin.Context) (*log.Entry, error) {
-	entryFromContext := ctx.Value(logShared.LoggerCtxKey)
-	if entryFromContext == nil {
+	entryFromContext, exists := ctx.Get(logShared.LoggerCtxKey)
+	if !exists {
 		return nil, &errors.ObjectNotInContextError{Object: logShared.LoggerCtxKey}
 	}
 

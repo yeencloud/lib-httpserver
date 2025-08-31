@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	metrics "github.com/yeencloud/lib-metrics"
+	"github.com/yeencloud/lib-metrics"
 
 	"github.com/yeencloud/lib-httpserver/domain"
 	shared "github.com/yeencloud/lib-shared/log"

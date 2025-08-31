@@ -14,7 +14,6 @@ type HttpServer struct {
 	config *HttpConfig.HttpServerConfig
 
 	Gin *gin.Engine
-
 	Env env.Environment
 }
 
@@ -34,8 +33,7 @@ func NewHttpServer(env env.Environment, config *HttpConfig.HttpServerConfig) *Ht
 		Gin: r,
 
 		config: config,
-
-		Env: env,
+		Env:    env,
 	}
 
 	gs.handleMiddleware()

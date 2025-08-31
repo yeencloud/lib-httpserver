@@ -1,8 +1,6 @@
 module github.com/yeencloud/lib-httpserver
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.25
 
 require (
 	github.com/ekyoung/gin-nice-recovery v0.0.0-20160510022553-1654dca486db
@@ -10,8 +8,9 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/samber/lo v1.51.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/yeencloud/lib-metrics v0.2.5
-	github.com/yeencloud/lib-shared v0.2.9
+	github.com/yeencloud/lib-httpserver/contract v1.0.0
+	github.com/yeencloud/lib-metrics v0.2.7
+	github.com/yeencloud/lib-shared v0.2.11
 )
 
 require (
