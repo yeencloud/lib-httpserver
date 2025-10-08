@@ -6,7 +6,7 @@ require (
 	github.com/ekyoung/gin-nice-recovery v0.0.0-20160510022553-1654dca486db
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-gonic/gin v1.10.0
-	github.com/samber/lo v1.51.0
+	github.com/samber/lo v1.52.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/yeencloud/lib-httpserver/contract v1.0.0
 	github.com/yeencloud/lib-metrics v0.2.7
