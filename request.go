@@ -23,11 +23,11 @@ func (gs *HttpServer) ProfileNextRequest(ctx *gin.Context) time.Duration {
 	return end.Sub(start)
 }
 
-// TODO: GET should be a debug log, other methods should be info, as to not flood the logs with GET requests
 func (gs *HttpServer) MapHttpStatusToLoggingLevel(ctx *gin.Context) logrus.Level {
 	status := ctx.Writer.Status()
 
 	level := logrus.InfoLevel
+ 
 	if status >= 400 && status < 500 {
 		level = logrus.WarnLevel
 	} else if status >= 500 {

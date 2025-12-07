@@ -3,9 +3,10 @@ package httpserver
 import (
 	"encoding/json"
 	"errors"
-	"github.com/samber/lo"
 	"net/http"
 	"strings"
+
+	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
 	"github.com/yeencloud/lib-httpserver/contract/httpserver"
@@ -38,7 +39,7 @@ func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any),
 	}
 
 	if err != nil {
-		hs.fillResponseWithErrorDetails(err, response)
+		hs.fillResponseWithErrorDetails(err, &response)
 	} else {
 		structmap, err := structToMap(body)
 		if err != nil {
@@ -52,7 +53,7 @@ func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any),
 	replyCall(code, response)
 }
 
-func (hs *HttpServer) fillResponseWithErrorDetails(err error, response httpserver.Response) {
+func (hs *HttpServer) fillResponseWithErrorDetails(err error, response *httpserver.Response) {
 	errorStr := err.Error()
 	errs := strings.Split(errorStr, "\n")
 
