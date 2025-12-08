@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
+	"github.com/yeencloud/lib-httpserver/domain"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yeencloud/lib-httpserver/contract/httpserver"
 
 	"github.com/yeencloud/lib-httpserver/domain/error"
 	sharedErrors "github.com/yeencloud/lib-shared/errors"
@@ -32,7 +32,7 @@ func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any),
 		return
 	}
 
-	response := httpserver.Response{
+	response := domain.Response{
 		Status:        code,
 		CorrelationId: lo.ToPtr(GetCorrelationID(ctx)),
 		RequestId:     lo.ToPtr(GetRequestID(ctx)),
@@ -53,7 +53,7 @@ func (hs *HttpServer) reply(ctx *gin.Context, replyCall func(code int, obj any),
 	replyCall(code, response)
 }
 
-func (hs *HttpServer) fillResponseWithErrorDetails(err error, response *httpserver.Response) {
+func (hs *HttpServer) fillResponseWithErrorDetails(err error, response *domain.Response) {
 	errorStr := err.Error()
 	errs := strings.Split(errorStr, "\n")
 
@@ -61,7 +61,7 @@ func (hs *HttpServer) fillResponseWithErrorDetails(err error, response *httpserv
 		errorStr = errs[0]
 	}
 
-	response.Error = &httpserver.ResponseError{
+	response.Error = &domain.ResponseError{
 		Message: errorStr,
 	}
 
