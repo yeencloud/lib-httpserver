@@ -10,7 +10,7 @@ import (
 func SetCors(router *gin.Engine, allowedOrigins []string) {
 	// Check if wildcard is used
 	isWildcard := len(allowedOrigins) == 1 && allowedOrigins[0] == "*"
-	
+
 	config := cors.Config{
 		AllowMethods:  []string{"PUT", "PATCH", "GET", "POST", "OPTIONS", "DELETE"},
 		AllowHeaders:  []string{"Origin", "Authorization", "Content-Type", "X-Request-ID", "X-Correlation-ID"},
