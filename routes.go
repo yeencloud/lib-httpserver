@@ -1,15 +1,15 @@
 package httpserver
 
 import (
+	"encoding/json"
 	"fmt"
 
 	nice "github.com/ekyoung/gin-nice-recovery"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-
 	"github.com/yeencloud/lib-httpserver/domain"
-	"github.com/yeencloud/lib-httpserver/domain/error"
-	"github.com/yeencloud/lib-shared/metrics"
+	"github.com/yeencloud/lib-shared/apperr"
+	SharedDomain "github.com/yeencloud/lib-shared/domain"
 )
 
 func debugPrintRoutes(httpMethod, absolutePath, handlerName string, nuHandlers int) {
@@ -23,28 +23,53 @@ func debugPrintRoutes(httpMethod, absolutePath, handlerName string, nuHandlers i
 	entry.Info(fmt.Sprintf("%s %s", httpMethod, absolutePath))
 }
 
-func (gs *HttpServer) recoverFromPanic(c *gin.Context, err interface{}) {
-	gs.ReplyWithError(c, &HttpError.InternalServerError{
+// MARK: Internal Server Error
+type InternalServerError struct {
+	AdditionalData interface{}
+}
+
+func (e *InternalServerError) Error() string {
+	marshal, err := json.Marshal(e.AdditionalData)
+	placeholderError := "internal server error"
+
+	if err != nil {
+		return placeholderError
+	}
+
+	return fmt.Sprintf("%s: %s", placeholderError, string(marshal))
+}
+
+func (e *InternalServerError) RestCode() int {
+	return 500
+}
+
+func (e *InternalServerError) Unwrap() error {
+	return apperr.InternalError{}
+}
+
+func (hs *HttpServer) recoverFromPanic(c *gin.Context, err interface{}) {
+	hs.ReplyWithError(c, &InternalServerError{
 		AdditionalData: err,
 	})
 }
 
-func (gs *HttpServer) handleErrorRoutes() {
-	gs.Gin.NoRoute(func(ctx *gin.Context) {
-		gs.ReplyWithError(ctx, &HttpError.PageNotFoundError{
-			Method: ctx.Request.Method,
-			Path:   ctx.Request.URL.Path,
-		})
+func (hs *HttpServer) handleErrorRoutes() {
+	hs.Gin.NoRoute(func(ctx *gin.Context) {
+		hs.ReplyWithError(ctx, domain.NewPageNotFoundError(ctx.Request.Method, ctx.Request.RequestURI))
 	})
 }
 
-func (gs *HttpServer) handleMiddleware() {
-	r := gs.Gin
+func (hs *HttpServer) handleMiddleware() {
+	r := hs.Gin
 
-	gs.handleErrorRoutes()
-	r.Use(nice.Recovery(gs.recoverFromPanic))
-	r.Use(gs.CreateLoggerForRequest)
-	r.Use(gs.CreateMetricsForRequest)
-	r.Use(gs.handleHeader(domain.HeaderXRequestId, domain.HttpRequestIdKey))
-	r.Use(gs.handleHeader(domain.HeaderXCorrelationId, metrics.CorrelationIdKey))
+	hs.handleErrorRoutes()
+	r.Use(hs.securityHeaders())
+	r.Use(nice.Recovery(hs.recoverFromPanic))
+	r.Use(hs.createLoggerForRequest)
+	// Set context
+	r.Use(mapRequestContextToContext(domain.HeaderXRequestId, SharedDomain.ContextRequestIdKey))
+	r.Use(mapRequestContextToContext(domain.HeaderXCorrelationId, SharedDomain.ContextCorrelationIdKey))
+	// Write headers back
+	r.Use(hs.handleHeader(domain.HeaderXRequestId, domain.HttpRequestIdKey))
+	r.Use(hs.handleHeader(domain.HeaderXCorrelationId, domain.HttpCorrelationIdKey))
 }

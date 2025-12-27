@@ -11,8 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/yeencloud/lib-httpserver/domain/error"
-	sharedErrors "github.com/yeencloud/lib-shared/errors"
+	appErrors "github.com/yeencloud/lib-shared/apperr"
 )
 
 func structToMap(v any) (map[string]interface{}, error) {
@@ -65,15 +64,10 @@ func (hs *HttpServer) fillResponseWithErrorDetails(err error, response *domain.R
 		Message: errorStr,
 	}
 
-	var IdentifierError sharedErrors.IdentifiableError
-	var FixError sharedErrors.FixableError
-
-	if errors.As(err, &IdentifierError) {
-		response.Error.Code = lo.ToPtr(IdentifierError.Identifier())
-	}
+	var FixError appErrors.FixableError
 
 	if errors.As(err, &FixError) {
-		response.Error.HowToFix = lo.ToPtr(FixError.HowToFix())
+		response.Error.TroubleshootingTip = lo.ToPtr(FixError.TroubleshootingTip())
 	}
 }
 
@@ -95,12 +89,6 @@ func (hs *HttpServer) Reply(ctx *gin.Context, body interface{}) {
 }
 
 func (hs *HttpServer) ReplyWithError(ctx *gin.Context, err error) {
-	code := http.StatusInternalServerError
-
-	var restError HttpError.RestErrorCode
-	if err != nil && errors.As(err, &restError) {
-		code = restError.RestCode()
-	}
-
+	code := mapErrorTypeToHttpCode(err)
 	hs.reply(ctx, hs.renderFunc(ctx), code, nil, err)
 }

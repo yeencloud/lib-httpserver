@@ -9,8 +9,9 @@ var HttpRequestContextKey = namespace.Namespace{Parent: &HttpContextKey, Identif
 var HttpResponseContextKey = namespace.Namespace{Parent: &HttpContextKey, Identifier: "response"}
 
 var (
-	HttpPathKey      = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "path"}
-	HttpFullPathKey  = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "fullPath"}
-	HttpMethodKey    = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "method"}
-	HttpRequestIdKey = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "request_id", IsMetricTag: true}
+	HttpPathKey          = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "path"}
+	HttpFullPathKey      = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "fullPath"}
+	HttpMethodKey        = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "method"}
+	HttpRequestIdKey     = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "request_id", IsMetricTag: true}
+	HttpCorrelationIdKey = namespace.Namespace{Parent: &HttpRequestContextKey, Identifier: "correlation_id", IsMetricTag: true}
 )

@@ -8,7 +8,7 @@ type Response struct {
 	Status        int                     `json:"status"`
 }
 type ResponseError struct {
-	Code     *string `json:"code"`
-	HowToFix *string `json:"howToFix"`
-	Message  string  `json:"message"`
+	Code               *string `json:"code"`
+	TroubleshootingTip *string `json:"troubleshooting"`
+	Message            string  `json:"message"`
 }

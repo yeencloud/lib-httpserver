@@ -17,7 +17,7 @@ type HttpServer struct {
 	Env env.Environment
 }
 
-func NewHttpServer(env env.Environment, config *HttpConfig.HttpServerConfig) *HttpServer {
+func NewHttpServer(env env.Environment, config *HttpConfig.HttpServerConfig) (*HttpServer, error) {
 	gin.DebugPrintRouteFunc = debugPrintRoutes
 	gin.DebugPrintFunc = func(format string, values ...interface{}) {}
 
@@ -25,9 +25,10 @@ func NewHttpServer(env env.Environment, config *HttpConfig.HttpServerConfig) *Ht
 
 	err := r.SetTrustedProxies(nil)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	SetCors(r, strings.Split(config.AllowedOrigins, ","))
+
+	setCors(r, strings.Split(config.AllowedOrigins, ","))
 
 	gs := &HttpServer{
 		Gin: r,
@@ -36,13 +37,18 @@ func NewHttpServer(env env.Environment, config *HttpConfig.HttpServerConfig) *Ht
 		Env:    env,
 	}
 
+	gs.setupSession()
 	gs.handleMiddleware()
 	gs.handleErrorRoutes()
-	r.Use(gs.LogRequest)
+	r.Use(gs.logRequest)
 
-	return gs
+	return gs, nil
 }
 
-func (gs *HttpServer) Run() error {
-	return gs.Gin.Run(fmt.Sprintf("%s:%d", gs.config.Host, gs.config.Port))
+func (hs *HttpServer) Run() error {
+	listenAddr := fmt.Sprintf("%s:%d", hs.config.Host, hs.config.Port)
+	if hs.config.TLS {
+		return hs.Gin.RunTLS(listenAddr, hs.config.TLSCert, hs.config.TLSKey)
+	}
+	return hs.Gin.Run(listenAddr)
 }
